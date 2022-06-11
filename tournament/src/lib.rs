@@ -64,18 +64,12 @@ pub fn tally(match_results: &str) -> String {
 }
 
 fn create_table(infos: &Vec<TeamInfo>) -> String {
-    let mut text = format!("{:<30} | MP |  W |  D |  L |  P", "Team");
-    if !infos.is_empty() {
-        text += "\n";
+    let header = format!("{:<30} | MP |  W |  D |  L |  P", "Team");
+    let mut all_infos = vec![header];
+    for info in infos {
+        all_infos.push(String::from(info));
     }
-    let mut it = infos.iter().peekable();
-    while let Some(info) = it.next() {
-        text += String::from(info).as_str();
-        if it.peek().is_some() {
-            text += "\n";
-        }
-    }
-    text
+    all_infos.join("\n")
 }
 
 struct TeamInfo {
