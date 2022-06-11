@@ -70,11 +70,7 @@ fn create_table(infos: &Vec<TeamInfo>) -> String {
     }
     let mut it = infos.iter().peekable();
     while let Some(info) = it.next() {
-        text += format!(
-            "{:<30} |  {} |  {} |  {} |  {} |  {}",
-            info.name, info.matches_played, info.wins, info.draws, info.losses, info.points
-        )
-        .as_str();
+        text += String::from(info).as_str();
         if it.peek().is_some() {
             text += "\n";
         }
@@ -89,6 +85,20 @@ struct TeamInfo {
     draws: u32,
     losses: u32,
     points: u32,
+}
+
+impl From<&TeamInfo> for String {
+    fn from(origin: &TeamInfo) -> Self {
+        format!(
+            "{:<30} | {:>2} | {:>2} | {:>2} | {:>2} | {:>2}",
+            origin.name,
+            origin.matches_played,
+            origin.wins,
+            origin.draws,
+            origin.losses,
+            origin.points
+        )
+    }
 }
 
 const POINTS_PER_WIN: u32 = 3;
