@@ -118,7 +118,7 @@ impl From<&TeamInfo> for String {
     }
 }
 
-fn process_team_results(name: &str, results: &Vec<TeamResult>) -> TeamInfo {
+fn process_team_results(name: &str, results: &[TeamResult]) -> TeamInfo {
     let mut team_info = TeamInfo::new(name.to_string());
     for result in results {
         match result {
@@ -130,7 +130,7 @@ fn process_team_results(name: &str, results: &Vec<TeamResult>) -> TeamInfo {
     team_info
 }
 
-fn create_table(infos: &Vec<TeamInfo>) -> String {
+fn create_table(infos: &[TeamInfo]) -> String {
     let header = format!("{:<30} | MP |  W |  D |  L |  P", "Team");
     let mut all_infos = vec![header];
     for info in infos {
