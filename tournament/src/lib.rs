@@ -72,6 +72,7 @@ fn create_table(infos: &Vec<TeamInfo>) -> String {
     all_infos.join("\n")
 }
 
+#[derive(Default)]
 struct TeamInfo {
     name: String,
     matches_played: u32,
@@ -79,6 +80,33 @@ struct TeamInfo {
     draws: u32,
     losses: u32,
     points: u32,
+}
+
+impl TeamInfo {
+    fn new(name: String) -> Self {
+        Self {
+            name,
+            ..Default::default()
+        }
+    }
+
+    fn add_win(&mut self) {
+        self.matches_played += 1;
+        self.wins += 1;
+        self.points += POINTS_PER_WIN;
+    }
+
+    fn add_draw(&mut self) {
+        self.matches_played += 1;
+        self.draws += 1;
+        self.points += POINTS_PER_DRAW;
+    }
+
+    fn add_loss(&mut self) {
+        self.matches_played += 1;
+        self.losses += 1;
+        self.points += POINTS_PER_LOSS;
+    }
 }
 
 impl From<&TeamInfo> for String {
@@ -99,34 +127,13 @@ const POINTS_PER_WIN: u32 = 3;
 const POINTS_PER_DRAW: u32 = 1;
 const POINTS_PER_LOSS: u32 = 0;
 fn process_team_results(name: &str, results: &Vec<TeamResult>) -> TeamInfo {
-    let matches_played = results.len() as u32;
-    let mut wins = 0;
-    let mut draws = 0;
-    let mut losses = 0;
-    let mut points = 0;
+    let mut team_info = TeamInfo::new(name.to_string());
     for result in results {
         match result {
-            TeamResult::Win => {
-                wins += 1;
-                points += POINTS_PER_WIN;
-            }
-            TeamResult::Draw => {
-                draws += 1;
-                points += POINTS_PER_DRAW;
-            }
-            TeamResult::Loss => {
-                losses += 1;
-                points += POINTS_PER_LOSS;
-            }
+            TeamResult::Win => team_info.add_win(),
+            TeamResult::Draw => team_info.add_draw(),
+            TeamResult::Loss => team_info.add_loss(),
         };
     }
-
-    TeamInfo {
-        name: name.to_string(),
-        matches_played,
-        wins,
-        draws,
-        losses,
-        points,
-    }
+    team_info
 }
