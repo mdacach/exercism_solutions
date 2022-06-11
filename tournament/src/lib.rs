@@ -1,5 +1,9 @@
 use std::collections::HashMap;
 
+const POINTS_PER_WIN: u32 = 3;
+const POINTS_PER_DRAW: u32 = 1;
+const POINTS_PER_LOSS: u32 = 0;
+
 enum TeamResult {
     Win,
     Loss,
@@ -63,15 +67,6 @@ pub fn tally(match_results: &str) -> String {
     create_table(&team_informations)
 }
 
-fn create_table(infos: &Vec<TeamInfo>) -> String {
-    let header = format!("{:<30} | MP |  W |  D |  L |  P", "Team");
-    let mut all_infos = vec![header];
-    for info in infos {
-        all_infos.push(String::from(info));
-    }
-    all_infos.join("\n")
-}
-
 #[derive(Default)]
 struct TeamInfo {
     name: String,
@@ -123,9 +118,6 @@ impl From<&TeamInfo> for String {
     }
 }
 
-const POINTS_PER_WIN: u32 = 3;
-const POINTS_PER_DRAW: u32 = 1;
-const POINTS_PER_LOSS: u32 = 0;
 fn process_team_results(name: &str, results: &Vec<TeamResult>) -> TeamInfo {
     let mut team_info = TeamInfo::new(name.to_string());
     for result in results {
@@ -136,4 +128,13 @@ fn process_team_results(name: &str, results: &Vec<TeamResult>) -> TeamInfo {
         };
     }
     team_info
+}
+
+fn create_table(infos: &Vec<TeamInfo>) -> String {
+    let header = format!("{:<30} | MP |  W |  D |  L |  P", "Team");
+    let mut all_infos = vec![header];
+    for info in infos {
+        all_infos.push(String::from(info));
+    }
+    all_infos.join("\n")
 }
