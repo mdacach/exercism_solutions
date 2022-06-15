@@ -16,9 +16,12 @@ pub fn anagrams_for<'a>(word: &str, possible_anagrams: &[&'a str]) -> HashSet<&'
 
     let target_word = sort_word_case_insensitive(word);
 
+    let lowercase_input_word = word.to_lowercase();
     let mut results = HashSet::new();
     for (sorted_word, original_word) in sorted_word_list.iter().zip(possible_anagrams) {
-        if *sorted_word == target_word && original_word.to_lowercase() != word.to_lowercase() {
+        let is_anagram = *sorted_word == target_word;
+        let same_as_input = original_word.to_lowercase() == lowercase_input_word;
+        if is_anagram && !same_as_input {
             results.insert(*original_word);
         }
     }
