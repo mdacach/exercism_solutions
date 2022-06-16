@@ -3,3 +3,6 @@
 
 # Exercism metadata
 *.exercism/
+
+# Target from exercises
+rust/*/target/
