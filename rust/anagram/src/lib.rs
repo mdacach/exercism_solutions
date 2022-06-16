@@ -10,13 +10,11 @@ pub fn anagrams_for<'a>(word: &str, possible_anagrams: &[&'a str]) -> HashSet<&'
             let candidate = candidate.to_lowercase();
             // Length between cases may differ in some cases, so we compare
             // them both lowercase
-            if candidate.len() != word_lowercase.len() {
-                return false;
-            }
-            if candidate == word_lowercase {
-                return false;
-            }
-            get_sorted(&candidate) == word_sorted
+            let same_length = candidate.len() == word_lowercase.len();
+            let same_word = candidate == word_lowercase;
+            let same_sorted = get_sorted(&candidate) == word_sorted;
+
+            same_length && !same_word && same_sorted
         })
         .copied()
         .collect()
