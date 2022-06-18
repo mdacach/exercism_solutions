@@ -3,142 +3,51 @@ pub fn annotate(minefield: &[&str]) -> Vec<String> {
         return Vec::new();
     }
 
-    let mut vec = Vec::new();
+    let mut field = Vec::new();
     for s in minefield {
-        vec.push(s.as_bytes());
+        field.push(s.as_bytes());
     }
 
-    let board = Board::new(&vec);
-
-    process_board(board)
-}
-
-enum CellType {
-    Empty(usize),
-    Mine,
-}
-
-struct Position {
-    x: i32,
-    y: i32,
-}
-
-struct Cell {
-    cell_type: CellType,
-    position: Position,
-}
-
-struct Board {
-    cells: Vec<Vec<Cell>>,
-    height: i32,
-    width: i32,
-}
-
-impl Board {
-    fn new(input: &[&[u8]]) -> Self {
-        let mut cells = Vec::new();
-        for (x, row) in input.iter().enumerate() {
-            let mut inner_vec = Vec::new();
-            for (y, col) in row.iter().enumerate() {
-                match col {
-                    b' ' => {
-                        let cell_type = CellType::Empty(0);
-                        let position = Position {
-                            x: x as i32,
-                            y: y as i32,
-                        };
-                        inner_vec.push(Cell {
-                            cell_type,
-                            position,
-                        })
-                    }
-                    b'*' => {
-                        let cell_type = CellType::Mine;
-                        let position = Position {
-                            x: x as i32,
-                            y: y as i32,
-                        };
-                        inner_vec.push(Cell {
-                            cell_type,
-                            position,
-                        })
-                    }
-                    _ => {}
-                }
+    let mut result = Vec::new();
+    for (x, row) in field.iter().enumerate() {
+        let mut current_string = String::new();
+        for (y, col) in row.iter().enumerate() {
+            match count_mines(&field, x as i32, y as i32) {
+                None => current_string.push('*'),
+                Some(0) => current_string.push(' '),
+                Some(count) => current_string.push_str(count.to_string().as_str()),
             }
-            cells.push(inner_vec);
         }
-
-        let height = input.len() as i32;
-        let width = input[0].len() as i32;
-
-        Board {
-            cells,
-            height,
-            width,
-        }
+        result.push(current_string);
     }
 
-    fn process_cell(&mut self, position: &Position) {
-        let cell = &self.cells[position.x as usize][position.y as usize];
-        if let CellType::Mine = cell.cell_type {
-            let x = position.x as i32;
-            let y = position.y as i32;
-            for r in x - 1..=x + 1 {
-                for c in y - 1..=y + 1 {
-                    if let Some(p) = self.get_position(r, c) {
-                        Board::update(self.cell_from_position(&p));
-                    }
-                }
+    result
+}
+
+fn count_mines(field: &[&[u8]], x: i32, y: i32) -> Option<usize> {
+    if is_mine(field, x, y) {
+        return None;
+    }
+
+    let mut surrounding_mines = 0;
+    for neighbor_x in x - 1..=x + 1 {
+        for neighbor_y in y - 1..=y + 1 {
+            if is_mine(field, neighbor_x, neighbor_y) {
+                surrounding_mines += 1;
             }
         }
     }
 
-    fn cell_from_position<'a>(&'a mut self, position: &Position) -> &'a mut Cell {
-        let Position { x, y } = *position;
-
-        &mut self.cells[x as usize][y as usize]
-    }
-
-    fn update(cell: &mut Cell) {
-        if let CellType::Empty(v) = &mut cell.cell_type {
-            *v += 1;
-        }
-    }
-
-    fn get_position(&self, x: i32, y: i32) -> Option<Position> {
-        if x >= 0 && x < self.height as i32 && y >= 0 && y < self.width as i32 {
-            return Some(Position { x, y });
-        }
-        None
-    }
+    Some(surrounding_mines)
 }
 
-fn process_board(mut board: Board) -> Vec<String> {
-    for x in 0..board.height {
-        for y in 0..board.width {
-            board.process_cell(&Position { x, y });
-        }
-    }
+fn is_in_bounds(field: &[&[u8]], x: i32, y: i32) -> bool {
+    let height = field.len() as i32;
+    let width = field[0].len() as i32;
 
-    board.into()
+    x >= 0 && x < height && y >= 0 && y < width
 }
 
-impl From<Board> for Vec<String> {
-    fn from(b: Board) -> Self {
-        let mut result = Vec::new();
-        for row in b.cells {
-            let mut s = String::new();
-            for cell in row {
-                match cell.cell_type {
-                    CellType::Empty(0) => s.push(' '),
-                    CellType::Empty(c) => s.push_str(&*c.to_string()),
-                    CellType::Mine => s.push('*'),
-                }
-            }
-            result.push(s);
-        }
-
-        result
-    }
+fn is_mine(field: &[&[u8]], x: i32, y: i32) -> bool {
+    is_in_bounds(field, x, y) && field[x as usize][y as usize] == b'*'
 }
