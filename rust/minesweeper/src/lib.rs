@@ -81,29 +81,14 @@ impl Board {
     fn process_cell(&mut self, position: &Position) {
         let cell = &self.cells[position.x][position.y];
         if let CellType::Mine = cell.cell_type {
-            if let Some(p) = &mut self.right(&cell.position) {
-                Board::update(self.cell_from_position(p));
-            }
-            if let Some(p) = &mut self.left(&position) {
-                Board::update(self.cell_from_position(p));
-            }
-            if let Some(p) = &mut self.up(&position) {
-                Board::update(self.cell_from_position(p));
-            }
-            if let Some(p) = &mut self.down(&position) {
-                Board::update(self.cell_from_position(p));
-            }
-            if let Some(p) = &mut self.upper_diag_left(&position) {
-                Board::update(self.cell_from_position(p));
-            }
-            if let Some(p) = &mut self.upper_diag_right(&position) {
-                Board::update(self.cell_from_position(p));
-            }
-            if let Some(p) = &mut self.lower_diag_left(&position) {
-                Board::update(self.cell_from_position(p));
-            }
-            if let Some(p) = &mut self.lower_diag_right(&position) {
-                Board::update(self.cell_from_position(p));
+            let x = position.x as i32;
+            let y = position.y as i32;
+            for r in x - 1..=x + 1 {
+                for c in y - 1..=y + 1 {
+                    if let Some(p) = self.get_position(r, c) {
+                        Board::update(self.cell_from_position(&p));
+                    }
+                }
             }
         }
     }
@@ -120,67 +105,14 @@ impl Board {
         }
     }
 
-    fn get_position(&self, x: usize, y: usize) -> Option<Position> {
-        if x < self.height && y < self.width {
-            return Some(Position { x, y });
+    fn get_position(&self, x: i32, y: i32) -> Option<Position> {
+        if x >= 0 && x < self.height as i32 && y >= 0 && y < self.width as i32 {
+            return Some(Position {
+                x: x as usize,
+                y: y as usize,
+            });
         }
         None
-    }
-
-    fn right(&self, position: &Position) -> Option<Position> {
-        let Position { x, y } = *position;
-        self.get_position(x, y + 1)
-    }
-
-    fn left(&self, position: &Position) -> Option<Position> {
-        let Position { x, y } = *position;
-
-        if y < 1 {
-            return None;
-        }
-        return self.get_position(x, y - 1);
-    }
-
-    fn up(&self, position: &Position) -> Option<Position> {
-        let Position { x, y } = *position;
-        if x < 1 {
-            return None;
-        };
-        self.get_position(x - 1, y)
-    }
-
-    fn down(&self, position: &Position) -> Option<Position> {
-        let Position { x, y } = *position;
-        self.get_position(x + 1, y)
-    }
-
-    fn upper_diag_right(&self, position: &Position) -> Option<Position> {
-        let Position { x, y } = *position;
-        if x < 1 {
-            return None;
-        }
-        self.get_position(x - 1, y + 1)
-    }
-
-    fn upper_diag_left(&self, position: &Position) -> Option<Position> {
-        let Position { x, y } = *position;
-        if x < 1 || y < 1 {
-            return None;
-        }
-        self.get_position(x - 1, y - 1)
-    }
-
-    fn lower_diag_right(&self, position: &Position) -> Option<Position> {
-        let Position { x, y } = *position;
-        self.get_position(x + 1, y + 1)
-    }
-
-    fn lower_diag_left(&self, position: &Position) -> Option<Position> {
-        let Position { x, y } = *position;
-        if y < 1 {
-            return None;
-        }
-        self.get_position(x + 1, y - 1)
     }
 }
 
