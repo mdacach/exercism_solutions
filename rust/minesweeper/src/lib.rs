@@ -37,16 +37,16 @@ struct Board {
 impl Board {
     fn new(input: &[&[u8]]) -> Self {
         let mut cells = Vec::new();
-        let mut x = 0;
-        let mut y = 0;
-        for row in input {
-            y = 0;
+        for (x, row) in input.iter().enumerate() {
             let mut inner_vec = Vec::new();
-            for col in *row {
+            for (y, col) in row.iter().enumerate() {
                 match col {
                     b' ' => {
                         let cell_type = CellType::Empty(0);
-                        let position = Position { x, y };
+                        let position = Position {
+                            x: x as i32,
+                            y: y as i32,
+                        };
                         inner_vec.push(Cell {
                             cell_type,
                             position,
@@ -54,7 +54,10 @@ impl Board {
                     }
                     b'*' => {
                         let cell_type = CellType::Mine;
-                        let position = Position { x, y };
+                        let position = Position {
+                            x: x as i32,
+                            y: y as i32,
+                        };
                         inner_vec.push(Cell {
                             cell_type,
                             position,
@@ -62,10 +65,8 @@ impl Board {
                     }
                     _ => {}
                 }
-                y += 1;
             }
             cells.push(inner_vec);
-            x += 1;
         }
 
         let height = input.len() as i32;
