@@ -19,8 +19,8 @@ enum CellType {
 }
 
 struct Position {
-    x: usize,
-    y: usize,
+    x: i32,
+    y: i32,
 }
 
 struct Cell {
@@ -30,8 +30,8 @@ struct Cell {
 
 struct Board {
     cells: Vec<Vec<Cell>>,
-    height: usize,
-    width: usize,
+    height: i32,
+    width: i32,
 }
 
 impl Board {
@@ -68,8 +68,8 @@ impl Board {
             x += 1;
         }
 
-        let height = input.len();
-        let width = input[0].len();
+        let height = input.len() as i32;
+        let width = input[0].len() as i32;
 
         Board {
             cells,
@@ -79,7 +79,7 @@ impl Board {
     }
 
     fn process_cell(&mut self, position: &Position) {
-        let cell = &self.cells[position.x][position.y];
+        let cell = &self.cells[position.x as usize][position.y as usize];
         if let CellType::Mine = cell.cell_type {
             let x = position.x as i32;
             let y = position.y as i32;
@@ -96,7 +96,7 @@ impl Board {
     fn cell_from_position<'a>(&'a mut self, position: &Position) -> &'a mut Cell {
         let Position { x, y } = *position;
 
-        &mut self.cells[x][y]
+        &mut self.cells[x as usize][y as usize]
     }
 
     fn update(cell: &mut Cell) {
@@ -107,10 +107,7 @@ impl Board {
 
     fn get_position(&self, x: i32, y: i32) -> Option<Position> {
         if x >= 0 && x < self.height as i32 && y >= 0 && y < self.width as i32 {
-            return Some(Position {
-                x: x as usize,
-                y: y as usize,
-            });
+            return Some(Position { x, y });
         }
         None
     }
