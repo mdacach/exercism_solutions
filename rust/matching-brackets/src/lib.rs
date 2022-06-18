@@ -2,9 +2,7 @@ pub fn brackets_are_balanced(string: &str) -> bool {
     let mut last_opened = Vec::new();
     for ch in string.chars() {
         match ch {
-            '[' => last_opened.push('['),
-            '{' => last_opened.push('{'),
-            '(' => last_opened.push('('),
+            '[' | '{' | '(' => last_opened.push(ch),
             ']' => {
                 if last_opened.pop() != Some('[') {
                     return false;
