@@ -32,16 +32,11 @@ fn count_mines(field: &[&[u8]], x: usize, y: usize) -> Option<usize> {
     let height = field.len();
     let width = field[0].len();
 
-    let mut surrounding_mines = 0;
     let (x_lower, x_upper) = (x.saturating_sub(1), (x + 1).min(height - 1));
     let (y_lower, y_upper) = (y.saturating_sub(1), (y + 1).min(width - 1));
-    for neighbor_x in x_lower..=x_upper {
-        for neighbor_y in y_lower..=y_upper {
-            if is_mine(field, neighbor_x, neighbor_y) {
-                surrounding_mines += 1;
-            }
-        }
-    }
+    let surrounding_mines = (x_lower..=x_upper)
+        .flat_map(|x| (y_lower..=y_upper).filter(move |&y| is_mine(field, x, y)))
+        .count();
 
     Some(surrounding_mines)
 }
