@@ -21,38 +21,26 @@ pub fn evaluate(inputs: &[CalculatorInput]) -> Option<i32> {
         match symbol {
             CalculatorInput::Value(v) => stack.push(*v),
             CalculatorInput::Add => {
-                if let Some((rhs, lhs)) = pop_two(&mut stack) {
-                    stack.push(lhs + rhs);
-                } else {
-                    return None;
-                }
+                let (rhs, lhs) = pop_two(&mut stack)?;
+                stack.push(lhs + rhs);
             }
             CalculatorInput::Subtract => {
-                if let Some((rhs, lhs)) = pop_two(&mut stack) {
-                    stack.push(lhs - rhs);
-                } else {
-                    return None;
-                }
+                let (rhs, lhs) = pop_two(&mut stack)?;
+                stack.push(lhs - rhs);
             }
             CalculatorInput::Multiply => {
-                if let Some((rhs, lhs)) = pop_two(&mut stack) {
-                    stack.push(lhs * rhs);
-                } else {
-                    return None;
-                }
+                let (rhs, lhs) = pop_two(&mut stack)?;
+                stack.push(lhs * rhs);
             }
             CalculatorInput::Divide => {
-                if let Some((rhs, lhs)) = pop_two(&mut stack) {
-                    stack.push(lhs / rhs);
-                } else {
-                    return None;
-                }
+                let (rhs, lhs) = pop_two(&mut stack)?;
+                stack.push(lhs / rhs);
             }
         }
     }
 
     if stack.len() == 1 {
-        return Some(stack.pop().unwrap());
+        return stack.pop();
     }
 
     None
