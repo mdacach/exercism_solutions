@@ -17,17 +17,13 @@ pub fn is_valid(code: &str) -> bool {
 
     let char_to_int = |c: char| c.to_digit(10).unwrap();
 
-    let doubled_digits_sum: u32 = code
+    let digits_sum: u32 = code
         .chars()
         .rev()
-        .skip(1)
-        .step_by(2)
         .map(char_to_int)
-        .map(transform_digit)
+        .enumerate()
+        .map(|(i, d)| if i % 2 == 1 { transform_digit(d) } else { d })
         .sum();
 
-    let other_digits_sum: u32 = code.chars().rev().step_by(2).map(char_to_int).sum();
-
-    let desired_sum = doubled_digits_sum + other_digits_sum; // it was counted twice
-    desired_sum % 10 == 0
+    digits_sum % 10 == 0
 }
